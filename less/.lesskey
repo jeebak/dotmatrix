@@ -1,0 +1,32 @@
+# These are section headers, and *are* significant
+
+# If changes are made to this file (~/.lesskey) then the lesskey command needs
+# to be re-run, resulting in an updated ~/.less file.
+
+# DOWN and j will move over EOF
+# Q and :cq will exit with return value 1
+#   for f in *; do less $f || rm $f; done
+# [ and ] move between files
+# D moves to the next line starting with "diff" or "comm
+# C moves to the next line starting with "commit"
+#   Type: '' to jump back to point before search
+
+# http://chneukirchen.org/blog/category/zsh.html
+#command
+h left-scroll
+l right-scroll
+\kd forw-line-force
+j forw-line-force
+[ prev-file
+] next-file
+Q quit \1
+:cq quit \1
+D noaction j/\^diff|\^commit|From \n\eu
+C noaction j/\^commit \n\eu
+
+#line-edit
+
+#env
+
+# LESS_TERMCAP_mb, etc. don't seem to work here :/
+# http://unix.stackexchange.com/questions/87261/getting-unexpected-colorized-output-on-several-commands

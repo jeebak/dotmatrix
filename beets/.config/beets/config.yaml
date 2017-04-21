@@ -1,0 +1,179 @@
+# http://beets.readthedocs.io/en/v1.4.2/guides/main.html
+# !!!!! --- NO sudo ON MACs --- !!!!!
+#   sudo pip install beets
+#   beet help
+#   beet config -p # show path
+#     ~/.config/beets/config.yaml
+#   beet config -e # edit
+#   beet ls # query string, -a = album, -p = path
+#   beet stats
+# -- Global Configs -----------------------------------------------------------
+# http://beets.readthedocs.io/en/v1.4.2/reference/config.html#global-options
+#   mkdir -p ~/Music/Beets ~/Music/Beets/.data
+#   To move, manually change "directory:", and run: beet move
+directory: ~/Music/Beets
+library: ~/Music/Beets/.data/library.blb
+format_item: %the{$albumartist}/$folder_year - $album%aunique{}/$disc_and_track $title
+
+# http://beets.readthedocs.io/en/v1.4.2/plugins/chroma.html
+# https://github.com/beetbox/pyacoustid
+#   sudo pip install pyacoustid
+#   sudo pip install requests
+#   sudo pip install flask
+#   sudo pip install discogs-client
+#   sudo apt-get install libchromaprint-tools
+#   - or - brew install chromaprint
+plugins: chroma convert discogs duplicates edit export fetchart fromfilename fuzzy hook importadded info inline missing permissions play random replaygain rewrite the web
+# ~/.config/beets/discogs_token.json
+
+# http://beets.readthedocs.io/en/v1.4.2/reference/config.html#asciify-paths
+asciify_paths: yes
+
+# http://beets.readthedocs.io/en/v1.4.2/reference/config.html#importer-options
+import:
+  incremental: yes
+  log: ~/Music/Beets/.data/import.log
+  move: yes
+  quiet_fallback: skip
+
+# The default strong recommendation threshold is 0.04. (0.10 would be 90%, and 0.0 would be 100%)
+# Changed this value temporarily when doing a mass import.
+match:
+  strong_rec_thresh: 0.0
+
+# http://beets.readthedocs.io/en/v1.4.2/reference/config.html#replace
+replace:
+    '[\\/]': _
+    '^\.': _
+    '[\x00-\x1f]': _
+    '[<>:"\?\*\|]': _
+    '\.$': _
+    '\s+$': ''
+    '^\s+': ''
+
+# -- Plugins ------------------------------------------------------------------
+# http://beets.readthedocs.io/en/v1.4.2/plugins/chroma.html
+# acoustid:
+#   apikey: XXXXXXXXXX
+# Set this to the real thing, if you wish to:
+#   beet submit
+# beet fingerprint
+
+# http://beets.readthedocs.io/en/v1.4.2/plugins/convert.html
+#   Depends on ffmpeg being installed
+convert:
+  auto: no
+  copy_album_art: yes
+  dest: ~/Music/Beets/.data/Converted
+  format: mp3
+  formats:
+    # https://trac.ffmpeg.org/wiki/Encode/HighQualityAudio
+    mp3:
+      # ffmpeg -i input.flac -y -vn -aq 2 outfile.mp3
+      # ffmpeg -i input.wav -c:a libfaac -q:a 330 -cutoff 15000 output.m4a
+      command: ffmpeg -i $source -y -vn -b:a 320k $dest
+  never_convert_lossy_files: yes
+# http://beets.readthedocs.io/en/v1.4.2/plugins/edit.html
+edit:
+  itemfields:
+    disc track tracktotal title artist album album_id mb_albumid original_year year
+  albumfields:
+    album albumartist mb_albumid original_year year
+# http://beets.readthedocs.io/en/v1.4.2/plugins/export.html
+export:
+  json:
+    formatting:
+      ensure_ascii: True
+      indent: 2
+      separators: [',' , ': ']
+      sort_keys: True
+# http://beets.readthedocs.io/en/v1.4.2/plugins/fuzzy.html
+#   fuzzy:
+#     threshold: The “sensitivity” of the fuzzy match. A value of 1.0 will show only perfect matches and a value of 0.0 will match everything. Default: 0.7.
+#     prefix: The character used to designate fuzzy queries. Default: ~, which may need to be escaped in some shells.
+# http://beets.readthedocs.io/en/v1.4.2/plugins/hook.html
+# hook:
+#   hooks:
+#     # http://beets.readthedocs.io/en/v1.4.2/dev/plugins.html#listen-for-events
+#     - event: import_task_start
+#       command: echo "-- import_task_start -----------------------------------------------------------"
+#     # Output on exit:
+#     #   beets just exited!
+#     #   have a nice day!
+#     - event: cli_exit
+#       command: echo "  Beets just exited!"
+#     - event: cli_exit
+#       command: echo "  Have a nice day!"
+#
+#     # Output on item import:
+#     #   importing "<file_name_here>"
+#     # Where <file_name_here> is the item being imported
+#     - event: item_imported
+#       command: echo "   Importing <= \"{item.path}\""
+#
+#     # Output on write:
+#     #   writing to "<file_name_here>"
+#     # Where <file_name_here> is the file being written to
+#     - event: write
+#       command: echo "   Writing to => {path}"
+# http://beets.readthedocs.io/en/v1.4.2/plugins/importadded.html
+importadded:
+  preserve_mtimes: yes
+  preserve_write_mtimes: yes
+# http://beets.readthedocs.io/en/v1.4.2/plugins/duplicates.html
+duplicates:
+  full: yes
+  path: yes
+# http://beets.readthedocs.io/en/v1.4.2/plugins/fromfilename.html
+#   Hoping to prevent ~/Music/Beets/_/0000 - 3344/00 - .mp3
+
+# http://beets.readthedocs.io/en/v1.4.2/plugins/info.html
+
+# http://beets.readthedocs.io/en/v1.4.2/plugins/inline.html
+item_fields:
+  disc_and_track: u'%02i.%02i -' % (disc, track) if
+                  disctotal > 1 else u'%02i -' % (track)
+  folder_year: u'%04i' % (original_year) if
+               original_year else u'%04i' % (year)
+# http://beets.readthedocs.io/en/v1.4.2/reference/pathformat.html
+paths:
+  default: %the{$albumartist}/$folder_year - $album%aunique{}/$disc_and_track $title
+  singleton: Non-Album/$artist/$title
+  comp: Compilations/$folder_year - $album%aunique{}/$disc_and_track $title
+  albumtype:soundtrack: Soundtracks/%the{$albumartist}/$folder_year - $album%aunique{}/$disc_and_track $title
+# beet list -f '$albumtype' | sort -u
+
+# http://beets.readthedocs.io/en/v1.4.2/plugins/missing.html
+missing:
+  count: no
+  total: no
+# http://beets.readthedocs.io/en/v1.4.2/plugins/permissions.html
+permissions:
+  file: 644
+  dir: 755
+# http://beets.readthedocs.io/en/v1.4.2/plugins/play.html
+play:
+  command: /Applications/VLC.app/Contents/MacOS/VLC
+# http://beets.readthedocs.io/en/v1.4.2/plugins/random.html
+
+# http://beets.readthedocs.io/en/v1.4.3/plugins/replaygain.html
+#   sudo apt-get install bs1770gain
+replaygain:
+  auto: no
+  backend: bs1770gain
+  overwrite: no
+  targetlevel: 89
+
+# http://beets.readthedocs.io/en/v1.4.3/plugins/rewrite.html
+rewrite:
+  artist 川口千里: Senri Kawaguchi
+  artist 마마무: Mamamoo
+  artist MAMAMOO: Mamamoo
+# As a convenience, the plugin applies patterns for the artist field to the
+# albumartist field as well. (Otherwise, you would probably want to duplicate
+# every rule for artist and albumartist.)
+
+# http://beets.readthedocs.io/en/latest/plugins/web.html
+web:
+  host: 0.0.0.0
+  port: 8337

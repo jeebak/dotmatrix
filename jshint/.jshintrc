@@ -1,0 +1,88 @@
+// http://www.jshint.com/docs/options/
+{
+// Enforcing options: When set to true, these options will make JSHint produce more warnings about your code.
+  "bitwise": true,
+  "camelcase": false,
+  "curly": true,
+  "eqeqeq": true,
+// es3
+// forin
+// freeze
+  "immed": true,
+  "indent": 2,
+  "latedef": true,
+  "newcap": true,
+  "noarg": true,
+// noempty
+// nonbsp
+// nonew
+// plusplus
+//"quotmark": true, // "single", or "double"
+  "undef": true,
+  "unused": true,
+  "strict": true,
+  "trailing": true,
+// maxparams
+// maxdepth
+// maxstatements
+// maxcomplexity
+// maxlen
+
+// Relaxing options: When set to true, these options will make JSHint produce less warnings about your code.
+// asi
+// boss
+// debug
+// eqnull
+  "esnext": true,
+// evil
+// expr
+// funcscope
+// gcl
+// globalstrict
+// iterator
+// lastsemic
+  "laxbreak": true,
+  "laxcomma": true,
+// loopfunc
+// maxerr
+// moz
+// multistr
+// notypeof
+// proto
+// scripturl
+  "smarttabs": true,
+// shadow
+// sub
+// supernew
+// validthis
+// noyield
+
+// Environments: These options let JSHint know about some pre-defined global variables.
+  "browser": true,
+// couch
+// devel
+// dojo
+  "jquery": true,
+// mootools
+  "node": true,
+// nonstandard
+// phantom
+// prototypejs
+// rhino
+// worker
+// wsh
+// yui
+
+// Legacy: These options are deprecated and will be removed soon. DO NOT use them.
+// nomen
+// onevar
+// passfail
+// white
+
+// Misc:
+  "regexp": true,
+  "globals": {
+    "angular": false
+  }
+}
+// vim: set ft=javascript:

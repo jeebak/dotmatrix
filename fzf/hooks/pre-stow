@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+CURRENT_DIR="$(dirname "${BASH_SOURCE[0]}")"
+source "$CURRENT_DIR/../../.lib/scripts/common.bash"
+
+# cache_shallow_clone https://github.com/junegunn/fzf.git "fzf"
+# cache_makelink   ".fzf" "fzf"
+# cache_verifylink ".fzf" "fzf"

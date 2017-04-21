@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+CURRENT_DIR="$(dirname "${BASH_SOURCE[0]}")"
+source "$CURRENT_DIR/../../.lib/scripts/common.bash"
+
+# cache_verifylink ".emacs.d" "emacs/spacemacs"
+# rm -vf "$HOME/.emacs.d"

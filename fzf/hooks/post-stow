@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# ~/.fzf/install --key-bindings --completion --no-update-rc
+# [[ -s ~/.zshrc ]] || rm -fv ~/.zshrc
