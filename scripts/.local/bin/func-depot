@@ -1,0 +1,264 @@
+#!/usr/bin/env bash
+
+# https://gist.github.com/waylan/4080362
+
+errcho() { # Echo to strerr
+  >&2 echo "$@"
+}
+
+reo() { # Redirect stderr to stdout
+  "$@" 2>&1
+}
+
+qt() { # Quiet stdout and stderr
+  "$@" > /dev/null 2>&1
+}
+
+qte() { # Quiet stderr
+  "$@" 2> /dev/null
+}
+
+cmd_exists() { # Does the command exist and in $PATH
+  command -v "$1" > /dev/null 2>&1
+}
+
+no_comments() { # Strip '#' based comments
+  if [[ "$#" -eq 0 ]]; then
+    sed 's/#.*$//'
+  else
+    echo "$@" | sed 's/#.*$//'
+  fi
+}
+
+# -- Edit results --------------------------------------------------------------
+vgmod() { # Edit file that git thinks is modified, with $VISUAL
+  "$VISUAL" $(git status -s | sed -ne 's/^ *MM* //p')
+}
+
+vimwhich() { # Edit the results of the which command (file or alias) with vim
+  local CMD="$(command -v "$1")"
+
+  if [[ "$CMD" == /* ]]; then
+    command "${EDITOR:-vim}" "$CMD"
+  elif [[ "$CMD" == "alias $1="* ]]; then
+    vimwhich ${CMD/alias $1=/}
+  else
+    echo "$CMD"
+  fi
+}
+
+# -- Utilities -----------------------------------------------------------------
+# Refined with: https://github.com/mathiasbynens/dotfiles/blob/master/.functions
+c() { # Quick command line calculator
+  local result="";
+
+  result="$(printf "scale=10;$*\n" | sed "s/x/*/g;s/,//g" | bc --mathlib | tr -d '\\\n')";
+  #                       └─ default (when `--mathlib` is used) is 20
+  #
+  if [[ "$result" == *.* ]]; then
+    # improve the output for decimal numbers
+    printf "$result" |
+    sed -e 's/^\./0./'        `# add "0" for cases like ".5"` \
+        -e 's/^-\./-0./'      `# add "0" for cases like "-.5"`\
+        -e 's/0*$//;s/\.$//';  # remove trailing zeros
+  else
+    printf "$result";
+  fi;
+  printf "\n";
+}
+
+# http://chneukirchen.org/blog/archive/2013/03/10-fresh-zsh-tricks-you-may-not-know.html
+#   "10. Renaming long file names sucks. Many use graphical file managers for it. I use imv (interactive mv)"
+imv() { # Interactive mv
+  local src dst
+  for src; do
+    [[ -e $src ]] || { print -u2 "$src does not exist"; continue; }
+    dst=$src
+    echo "Rename to?..."
+    vared dst
+    [[ $src != $dst ]] && mkdir -p $dst:h && mv -n $src $dst
+  done
+}
+
+# up() { # Cd up directories
+#   local op=print
+#   [[ -t 1 ]] && op=cd
+#   case "$1" in
+#     '') up 1;;
+#     -*|+*) $op ~$1;;
+#     <->) $op $(printf '../%.0s' {1..$1});;
+#     *) local -a seg; seg=(${(s:/:)PWD%/*})
+#        local n=${(j:/:)seg[1,(I)$1*]}
+#        if [[ -n $n ]]; then
+#          $op /$n
+#        else
+#          print -u2 up: could not find prefix $1 in $PWD
+#          return 1
+#        fi
+#   esac
+# }
+
+galias() { # Show shell and git aliases
+  { echo "Shell Aliases"
+    alias | grep git | sed 's/^/ /;s/=/#=> /' | column -t -s'#' | cat -n
+    echo
+    echo "Git Aliases"
+    git config --list | grep '^alias\.' | sed 's/^alias\.\([^=]*\)=\(.*\)/ \1#=> \2/' | column -s'#' -t | sort | cat -n
+  } | less -S
+}
+
+myspell() { # Ispell checking
+  echo "$@" | ispell -a -m
+}
+
+broken_links() { # Find broken symlinks
+  # http://unix.stackexchange.com/questions/34248/how-can-i-find-broken-symlinks/38691#38691
+  #   vs. 'find -L "${1:-.}" -type l -ls'
+  find "${1:-.}" -xtype l -ls
+  # slower: ls -l  **/*(-@)
+}
+
+mb() { # Human readable Megabytes
+  local i
+
+  for i; do
+    if [[ -f "$i" ]]; then
+      echo "$(echo "scale=2; $(ls -l "$i" | sed 's/[	 ][	 ]*/ /g' | cut -d" " -f 5)/1048576" | bc)\t$i"
+    elif [[ -d "$i" ]]; then
+      du -hs "$i"
+    else
+      echo "scale=2; $i/1048576" | bc
+    fi
+  done
+}
+
+newest() { # List files in timestamp order, newest last
+  find "${1:-.}" -type f -printf "%C@ %c %p\n" | grep -v -e \\.git/ | sort | sed 's/^[[:digit:]]*\.[[:digit:]]* //; s/\.[[:digit:]]* / /'
+}
+
+# https://github.com/myfreeweb/zshuery
+#   autoload colors; colors; is loaded elsewhere
+#   Added: | cat -n
+path() { # Colorized formatted $PATH
+  echo "$PATH" | tr ":" "\n" | \
+    awk "{ sub(\"/usr\",   \"$fg_no_bold[green]/usr$reset_color\"); \
+           sub(\"/bin\",   \"$fg_bold[blue]/bin$reset_color\"); \
+           sub(\"/sbin\",  \"$fg_bold[magenta]/sbin$reset_color\"); \
+           sub(\"/local\", \"$fg_no_bold[yellow]/local$reset_color\"); \
+           sub(\"/opt\",   \"$fg_no_bold[cyan]/opt$reset_color\"); \
+           sub(\"/Users\", \"$fg_no_bold[red]/Users$reset_color\"); \
+           sub(\"/home\",  \"$fg_no_bold[red]/home$reset_color\"); \
+           print }" | command cat -n
+}
+
+# Below from: http://www.zshwiki.org/cgi-bin/wiki.pl?ZshFunction
+# ... with some modifications
+# Thu Apr 24 10:45:55 PDT 2003
+
+# hgrep - highlight grep
+hgrep() { # grep like function which highlights matches
+  if (( ! $# )); then
+    echo "Usage: $0:t [-e pattern...] [file...]" >&2
+    return 1
+  fi
+  local -a regex
+  local htext="$(echotc so)" ntext="$(echotc se)"
+  while [[ "$1" = -e ]]; do
+    regex=( $regex "$2" )
+    shift 2
+  done
+  if (( ! $#regex )); then
+    regex=( "$1" )
+    shift
+  fi
+  regex=( "-e s/${^regex[@]}/$htext&$ntext/g" )
+  sed "${(Ff)regex[@]}" "$@"
+}
+
+ts2date() { # Timestamp to date
+  [[ $OSTYPE == darwin* ]] && command date -r"$1" || command date -d @"$1" +%c
+}
+
+frm() { # Hmm... I don't remember what this does
+  local i empty_delete_dir
+
+  empty_delete_dir="/tmp/frm-empty-delete-dir-$$"
+  mkdir -p "$empty_delete_dir"
+
+  for i in "$@"; do
+    if [[ -h "$i" ]] || [[ -f "$i" ]]; then
+      time command rm -vf $i
+    elif [[ -d "$i" ]]; then
+      time command rsync -av --progress --delete "$empty_delete_dir/" "$i"
+    fi
+  done
+
+  [[ -d "$empty_delete_dir" ]] && command rm -rf "$empty_delete_dir"
+}
+
+vsm() { # Vagrant Ssh as Me
+  local port="$(vagrant ssh-config | egrep -o ' [[:digit:]]{4}$')"
+
+  ssh "$USER"@127.0.0.1 -p "$port" -o Compression=yes -o UserKnownHostsFile=/dev/null -o LogLevel=FATAL -o IdentitiesOnly=yes -o StrictHostKeyChecking=no
+}
+
+# http://tychoish.com/posts/9-awesome-ssh-tricks/
+ssh-reagent() { # Reattached to SSH agent
+  local agent
+
+  for agent in /tmp/ssh-*/agent.*; do
+    export SSH_AUTH_SOCK="$agent"
+    if ssh-add -l 2>&1 > /dev/null; then
+      echo Found working SSH Agent:
+      ssh-add -l
+      return
+    fi
+  done
+  echo Cannot find ssh agent - maybe you should reconnect and forward it?
+}
+
+# -- Override Commands ---------------------------------------------------------
+if cmd_exists md5 && ! cmd_exists md5sum; then
+md5sum() { # Wrapper for md5
+  md5 "$@" | sed 's/^MD5 (\(.*\)) = \([a-f0-9]*\)/\2  \1/'
+}
+fi
+
+# Is the column cmd available? If so,...
+if cmd_exists column; then
+mount() { # Make mount display more pretty
+  [[ $# -eq 0 ]] && command mount | column -t || command mount "$@"
+}
+fi
+
+# "main()" if not "source"-d
+#   declare -F, for function names
+#   declare -f, for function definitions
+if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then
+  # Allow for function names to be sym- or hard-linked to this script
+  type -t "accpl.${accpl_self}" > /dev/null && subcommand="$accpl_self" || {
+    subcommand="$1"
+    shift
+  }
+
+  case $subcommand in
+    "" | "-h" | "--help")
+      tabs 25
+      echo "Functions	 Description"
+      eval printf %.0s- '{1..'"${COLUMNS:-$(tput cols)}"\}; echo
+      grep '^[^#]*() {' "$0" | sed 's/ { #/	/'
+      eval printf %.0s- '{1..'"${COLUMNS:-$(tput cols)}"\}; echo
+      ;;
+    *)
+      "accpl.${subcommand}" "$@"
+      if [[ $? -eq 127 ]]; then
+        cat <<EOT >&2
+Error: '$subcommand' is not a known subcommand.
+EOT
+        exit $?
+      fi
+      ;;
+  esac
+fi
+
+# vim: set ft=zsh:
