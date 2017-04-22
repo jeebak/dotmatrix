@@ -233,7 +233,14 @@ mount() { # Make mount display more pretty
 }
 fi
 
-# "main()" if not "source"-d
+if cmd_exists curl && ! cmd_exists wget; then
+wget() { # Wrapper for wget, using curl
+  local outfile="$(basename "$1")"
+
+  curl -o "$outfile" "$1"
+}
+fi
+# -- "main()" if not "source"-d ------------------------------------------------
 #   declare -F, for function names
 #   declare -f, for function definitions
 if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then
