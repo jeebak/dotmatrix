@@ -32,16 +32,18 @@ restow-all: unstow-all
 
 $(STOWABLE):
 	@echo "$$(tput setaf 3)Processing: $$(tput setaf 5)$@$$(tput sgr0)"
-	@[[ -x "$@/hooks/pre-$(ACTION)" ]] \
-		&& { echo "$$(tput setaf 5)  Running $$(tput setaf 3)pre-$(ACTION)$$(tput setaf 5) hook$$(tput sgr0)"; "./$@/hooks/pre-$(ACTION)"; } \
-		|| true
+	@if [[ -x "$@/hooks/pre-$(ACTION)" ]]; then \
+		echo "$$(tput setaf 5)  Running $$(tput setaf 3)pre-$(ACTION)$$(tput setaf 5) hook$$(tput sgr0)"; \
+		$(SHELL) "./$@/hooks/pre-$(ACTION)"; \
+	fi
 	@stow -v -t "$(STOW_TARGET)" \
 		--no-folding \
 		--ignore='^README.md$$' \
 		--ignore='^hooks$$' \
  		$(STOW_OPTIONS) $@
-	@[[ -x "$@/hooks/post-$(ACTION)" ]] \
-		&& { echo "$$(tput setaf 5)  Running $$(tput setaf 3)post-$(ACTION)$$(tput setaf 5) hook$$(tput sgr0)"; "./$@/hooks/post-$(ACTION)"; } \
-		|| true
+	@if [[ -x "$@/hooks/post-$(ACTION)" ]]; then \
+		echo "$$(tput setaf 5)  Running $$(tput setaf 3)post-$(ACTION)$$(tput setaf 5) hook$$(tput sgr0)"; \
+		$(SHELL) "./$@/hooks/post-$(ACTION)"; \
+	fi
 
 .PHONY: $(STOWABLE)
