@@ -1,13 +1,31 @@
 #!/usr/bin/env bash
 
-# http://stackoverflow.com/a/6110446
+# http://stackoverflow.com/a/6110446 (this was cool, but wouldn't allow for
+# call stack via caller, BASH_SOURCE, FUNCNAME
 set -e
 # shellcheck disable=SC2154
-trap 'prev_cmd=$this_cmd; this_cmd=$BASH_COMMAND' DEBUG
+# trap 'prev_cmd=$this_cmd; this_cmd=$BASH_COMMAND' DEBUG
 # shellcheck disable=SC2154
-trap 'EC=$?; BAD_CMD="$prev_cmd"; [[ $EC -ne 0 ]] && echo "Exit: $EC, due to: $BAD_CMD"' EXIT
+# trap 'EC=$?; BAD_CMD="$prev_cmd"; [[ $EC -ne 0 ]] && die "Exit: $EC, due to: $BAD_CMD"' EXIT
 
 CACHE_ROOT="$HOME/.cache/dotfiles"
+
+# http://wiki.bash-hackers.org/commands/builtin/caller
+die() {
+  local frame=0
+
+  echo "    Error: $1"
+  echo "      Caller Frame(s):"
+
+  while caller $frame; do
+    ((frame++));
+  done | sed 's/^/        /'
+
+  # printf '        %s\n' "${BASH_SOURCE[@]}"
+  # printf '        %s\n' "${FUNCNAME[@]}"
+
+  exit 1
+}
 
 # Quiet stdout and stderr
 qt() {
@@ -35,7 +53,8 @@ cache_mkdir_p "$CACHE_ROOT"
 # $1 is relative to $HOME
 # $2 is relative to $CACHE_ROOT
 cache_verifylink () {
-  [[ "$(readlink "$HOME/$1")" == "$CACHE_ROOT/$2" ]]
+  [[ "$(readlink "$HOME/$1")" == "$CACHE_ROOT/$2" ]] \
+    || die "\$(readlink $HOME/$1) != $CACHE_ROOT/$2"
 }
 
 # $1 is relative to $HOME
