@@ -220,6 +220,17 @@ ssh-reagent() { # Reattached to SSH agent
 }
 
 # -- Override Commands ---------------------------------------------------------
+curl() { # Curl wrapper that uses $1 for --config, if file exists
+  local conf_option
+
+  if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/curl/conf.d/${1}.conf" ]]; then
+    conf_option="--config ${XDG_CONFIG_HOME:-$HOME/.config}/curl/conf.d/${1}.conf"
+    shift
+  fi
+
+  command curl $conf_option "$@"
+}
+
 if cmd_exists md5 && ! cmd_exists md5sum; then
 md5sum() { # Wrapper for md5
   md5 "$@" | sed 's/^MD5 (\(.*\)) = \([a-f0-9]*\)/\2  \1/'
@@ -236,7 +247,7 @@ fi
 if cmd_exists curl && ! cmd_exists wget; then
 wget() { # Wrapper for wget, using curl
   local outfile="$(basename "$1")"
-
+  # The -O (--remote-name) option seems to fail if there's a 302
   curl -o "$outfile" "$1"
 }
 fi
@@ -253,7 +264,7 @@ if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then
       tabs 27
       echo "  Functions	 Description"
       eval printf %.0s- '{1..'"${COLUMNS:-$(tput cols)}"\}; echo
-      grep '^[^#]*() {' "$0" | sed 's/^/  /;s/ { #/	/'
+      grep '^[^#]*() {' "$0" | sed 's/^/  /;s/ { #/	/' | sort
       eval printf %.0s- '{1..'"${COLUMNS:-$(tput cols)}"\}; echo
       # ... making this assumption
       tabs 8
