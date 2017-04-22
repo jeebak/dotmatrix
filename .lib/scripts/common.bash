@@ -19,7 +19,7 @@ die() {
 
   while caller $frame; do
     ((frame++));
-  done | sed 's/^/        /'
+  done | sed 's/^/line: /' | column -t | sed 's/^/        /'
 
   # printf '        %s\n' "${BASH_SOURCE[@]}"
   # printf '        %s\n' "${FUNCNAME[@]}"
