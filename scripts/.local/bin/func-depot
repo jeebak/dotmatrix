@@ -224,11 +224,12 @@ curl() { # Curl wrapper that uses $1 for --config, if file exists
   local conf_option
 
   if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/curl/conf.d/${1}.conf" ]]; then
-    conf_option="--config ${XDG_CONFIG_HOME:-$HOME/.config}/curl/conf.d/${1}.conf"
+    conf_option="${XDG_CONFIG_HOME:-$HOME/.config}/curl/conf.d/${1}.conf"
     shift
+    command curl --config $conf_option "$@"
+  else
+    command curl "$@"
   fi
-
-  command curl $conf_option "$@"
 }
 
 if cmd_exists md5 && ! cmd_exists md5sum; then
