@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+func_depot_self="${0##/*/}"
+
 # https://gist.github.com/waylan/4080362
 
 errcho() { # Echo to strerr
@@ -235,22 +237,22 @@ fi
 #   declare -F, for function names
 #   declare -f, for function definitions
 if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then
-  # Allow for function names to be sym- or hard-linked to this script
-  type -t "accpl.${accpl_self}" > /dev/null && subcommand="$accpl_self" || {
-    subcommand="$1"
-    shift
-  }
+  subcommand="$1"
+  shift
 
   case $subcommand in
     "" | "-h" | "--help")
-      tabs 25
-      echo "Functions	 Description"
+      # TODO: find alternative to tabs (part of ncurses)
+      tabs 27
+      echo "  Functions	 Description"
       eval printf %.0s- '{1..'"${COLUMNS:-$(tput cols)}"\}; echo
-      grep '^[^#]*() {' "$0" | sed 's/ { #/	/'
+      grep '^[^#]*() {' "$0" | sed 's/^/  /;s/ { #/	/'
       eval printf %.0s- '{1..'"${COLUMNS:-$(tput cols)}"\}; echo
+      # ... making this assumption
+      tabs 8
       ;;
     *)
-      "accpl.${subcommand}" "$@"
+      "${subcommand}" "$@"
       if [[ $? -eq 127 ]]; then
         cat <<EOT >&2
 Error: '$subcommand' is not a known subcommand.
