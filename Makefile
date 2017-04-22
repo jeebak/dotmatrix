@@ -3,16 +3,19 @@ STOW_TARGET = $$HOME
 
 ACTION = stow
 # Bash completions seems to handle this fine, but not zsh :/
-STOWABLE=$(shell echo */ | sed 's;/;;g')
+STOWABLE = $(shell echo */ | sed 's;/;;g')
 
 # if the *first* argument is 'unstow,'
 ifeq (unstow, $(firstword $(MAKECMDGOALS)))
 # then set variables accordingly
 unstow:
-	@echo "$$(tput setaf 3)Setting: $$(tput setaf 5)STOW_OPTIONS = -D$$(tput sgr0)"
+	@echo "$$(tput setaf 3)Setting: $$(tput setaf 5)STOW_OPTIONS = -D, ACTION = unstow$$(tput sgr0)"
 	$(eval STOW_OPTIONS = -D)
-	@echo "$$(tput setaf 3)Setting: $$(tput setaf 5)ACTION = unstow$$(tput sgr0)"
 	$(eval ACTION = unstow)
+else ifeq (restow, $(firstword $(MAKECMDGOALS)))
+restow:
+	make unstow $(filter-out $@, $(MAKECMDGOALS))
+	make        $(filter-out $@, $(MAKECMDGOALS))
 endif
 
 stow-all: ACTION = stow
