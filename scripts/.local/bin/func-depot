@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
-func_depot_self="${0##/*/}"
-
 # https://gist.github.com/waylan/4080362
 
+# -- I/O Redirection -----------------------------------------------------------
 errcho() { # Echo to strerr
   >&2 echo "$@"
 }
@@ -20,10 +19,12 @@ qte() { # Quiet stderr
   "$@" 2> /dev/null
 }
 
+# -- Tests ---------------------------------------------------------------------
 cmd_exists() { # Does the command exist and in $PATH
   command -v "$1" > /dev/null 2>&1
 }
 
+# -- Filters -------------------------------------------------------------------
 no_comments() { # Strip '#' based comments
   if [[ "$#" -eq 0 ]]; then
     sed 's/#.*$//'
@@ -233,24 +234,24 @@ curl() { # Curl wrapper that uses $1 for --config, if file exists
 }
 
 if cmd_exists md5 && ! cmd_exists md5sum; then
-md5sum() { # Wrapper for md5
-  md5 "$@" | sed 's/^MD5 (\(.*\)) = \([a-f0-9]*\)/\2  \1/'
-}
+  md5sum() { # Wrapper for md5
+    md5 "$@" | sed 's/^MD5 (\(.*\)) = \([a-f0-9]*\)/\2  \1/'
+  }
 fi
 
 # Is the column cmd available? If so,...
 if cmd_exists column; then
-mount() { # Make mount display more pretty
-  [[ $# -eq 0 ]] && command mount | column -t || command mount "$@"
-}
+  mount() { # Make mount display more pretty
+    [[ $# -eq 0 ]] && command mount | column -t || command mount "$@"
+  }
 fi
 
 if cmd_exists curl && ! cmd_exists wget; then
-wget() { # Wrapper for wget, using curl
-  local outfile="$(basename "$1")"
-  # The -O (--remote-name) option seems to fail if there's a 302
-  curl -o "$outfile" "$1"
-}
+  wget() { # Wrapper for wget, using curl
+    local outfile="$(basename "$1")"
+    # The -O (--remote-name) option seems to fail if there's a 302
+    curl -o "$outfile" "$1"
+  }
 fi
 # -- "main()" if not "source"-d ------------------------------------------------
 #   declare -F, for function names
@@ -265,7 +266,7 @@ if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then
       tabs 27
       echo "  Functions	 Description"
       eval printf %.0s- '{1..'"${COLUMNS:-$(tput cols)}"\}; echo
-      grep '^[^#]*() {' "$0" | sed 's/^/  /;s/ { #/	/' | sort
+      grep '^ *[^#]*() {' "$0" | sed 's/^ */  /;s/ { #/	/' | sort
       eval printf %.0s- '{1..'"${COLUMNS:-$(tput cols)}"\}; echo
       # ... making this assumption
       tabs 8
