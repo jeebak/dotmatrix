@@ -13,11 +13,12 @@ fi
 
 if ! diff "$HOME/.ssh/config" "$HOME/.ssh/config.$$"; then
   read -r -n1 -p "SSH Config file diff encountered. Overwrite? [y|n] " yn
+  echo
   if [[ "$yn" = "y" ]]; then
     mv "$HOME/.ssh/config" "$HOME/.ssh/config.$$.bak"
     mv "$HOME/.ssh/config.$$" "$HOME/.ssh/config"
   fi
-  chmod 600 "$HOME/.ssh/config*"
+  chmod 600 "$HOME"/.ssh/config*
 fi
 
 rm -f "$HOME/.ssh/config.$$"
