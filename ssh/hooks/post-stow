@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+#exit
+# Just an example, so just exiting out right away
+
+cat "$HOME/.ssh/conf.d/"*.conf > "$HOME/.ssh/config.$$"
+
+if [[ ! -e "$HOME/.ssh/config" ]]; then
+  mv "$HOME/.ssh/config.$$" "$HOME/.ssh/config"
+  chmod 600 "$HOME/.ssh/config"
+  exit
+fi
+
+if ! diff "$HOME/.ssh/config" "$HOME/.ssh/config.$$"; then
+  read -r -n1 -p "SSH Config file diff encountered. Overwrite? [y|n] " yn
+  if [[ "$yn" = "y" ]]; then
+    mv "$HOME/.ssh/config" "$HOME/.ssh/config.$$.bak"
+    mv "$HOME/.ssh/config.$$" "$HOME/.ssh/config"
+  fi
+  chmod 600 "$HOME/.ssh/config*"
+fi
+
+rm -f "$HOME/.ssh/config.$$"
