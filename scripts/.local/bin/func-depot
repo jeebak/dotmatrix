@@ -220,6 +220,18 @@ ssh-reagent() { # Reattached to SSH agent
   echo Cannot find ssh agent - maybe you should reconnect and forward it?
 }
 
+# Based on: http://stackoverflow.com/questions/4023830/how-compare-two-strings-in-dot-separated-version-format-in-bash
+#   GNU sort has -V option. Brew coretuils has gsort.
+versort() { # Version Sort (sort -V workaround)
+  printf '%s\n' "$@" | sort -t '.' -k 1,1 -k 2,2 -k 3,3 -k 4,4 -k 5,5 -k 6,6 -k 7,7 -k 8,8 -k 9,9 -g
+}
+
+vercmp() { # Version Compare: returns 0 for '=', 1 for '<', and 2 for '>'
+  [[ "$1" = "$2" ]] && return 0
+  [[ "$(head -n1 <(versort "$1" "$2"))" = "$1" ]] && return 1
+  return 2
+}
+
 # -- Override Commands ---------------------------------------------------------
 curl() { # Curl wrapper that uses $1 for --config, if file exists
   local conf_option
