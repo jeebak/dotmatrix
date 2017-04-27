@@ -245,6 +245,18 @@ curl() { # Curl wrapper that uses $1 for --config, if file exists
   fi
 }
 
+if cmd_exists yadm; then
+  git() { # Wrapper for git, that's yadm aware
+    local git_root="$(qt command git rev-parse --show-toplevel)"
+
+    if [[ "$PWD" = "$HOME" ]] || [[ "$git_root" = "$HOME" ]]; then
+      command yadm "$@"
+    else
+      command git "$@"
+    fi
+  }
+fi
+
 if cmd_exists md5 && ! cmd_exists md5sum; then
   md5sum() { # Wrapper for md5
     md5 "$@" | sed 's/^MD5 (\(.*\)) = \([a-f0-9]*\)/\2  \1/'
