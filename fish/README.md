@@ -11,7 +11,9 @@ _"The user-friendly command line shell."_
 ~/.local/share/omf
 
 # Install everything for evaluation
-omf install (curl -s https://api.github.com/repos/oh-my-fish/packages-main/contents/packages | grep '"path"' | sed 's| *"path": "packages/||;s|",$||')
+for pkg in (curl -s https://api.github.com/repos/oh-my-fish/packages-main/contents/packages | grep '"path"' | sed 's| *"path": "packages/||;s|",$||')
+  echo omf install $pkg
+end
 ```
 
 * https://fishshell.com/
