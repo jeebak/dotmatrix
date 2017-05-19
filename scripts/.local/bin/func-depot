@@ -270,6 +270,17 @@ if cmd_exists column; then
   }
 fi
 
+if cmd_exists puppet-lint; then
+  puppet-lint() { # Wrapper for puppet-lint, to also call: puppet parser validate, if available
+    echo "Running: puppet-lint $@"
+    command puppet-lint "$@"
+    if cmd_exists puppet; then
+      echo "Running: puppet parser validate $@"
+      command puppet parser validate "$@"
+    fi
+  }
+fi
+
 if cmd_exists curl && ! cmd_exists wget; then
   wget() { # Wrapper for wget, using curl
     local outfile="$(basename "$1")"

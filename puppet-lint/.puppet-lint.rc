@@ -1,0 +1,2 @@
+# Skip the puppet_url_without_modules check.
+--no-puppet_url_without_modules-check
