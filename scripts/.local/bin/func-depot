@@ -271,10 +271,16 @@ if cmd_exists column; then
 fi
 
 if cmd_exists puppet-lint; then
+  # NOTE: I'm primarily using this for only files/dirs re: options for
+  # 'puppet-lint' and 'puppet parser validate' are different
+  # ... and only the special case of the '--fix' puppet-lint option is handles,
+  # w/ the 'shift' below
   puppet-lint() { # Wrapper for puppet-lint, to also call: puppet parser validate, if available
     echo "Running: puppet-lint $@"
     command puppet-lint "$@"
+
     if cmd_exists puppet; then
+      [[ "$1" = '--fix' ]] && shift
       echo "Running: puppet parser validate $@"
       command puppet parser validate "$@"
     fi
