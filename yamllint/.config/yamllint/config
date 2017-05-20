@@ -1,0 +1,10 @@
+# Extend the default conf, adjusting some options.
+extends: default
+
+rules:
+  # 80 chars should be enough, but don't fail if a line is longer
+  line-length:
+    max: 80
+    level: warning
+
+# vim: set ft=yaml:
