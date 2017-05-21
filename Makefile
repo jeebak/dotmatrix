@@ -1,5 +1,7 @@
 SHELL := /bin/bash
 STOW_TARGET = $$HOME
+SCRIPTS = .lib/scripts
+TEMPLATES = .lib/templates
 # -----------------------------------------------------------------------------
 # Set default options
 HOOK = stow
@@ -36,22 +38,23 @@ uninstall:
 	@echo "$$(tput setaf 3)Setting: $$(tput setaf 5)STOW_OPTIONS = -D, HOOK = $@$$(tput sgr0)"
 	$(eval HOOK = uninstall)
 	$(eval STOW_OPTIONS = -D)
+else ifeq (init, $(firstword $(MAKECMDGOALS)))
+init:
+	@for i in $(filter-out $@, $(MAKECMDGOALS)); do \
+		[[ ! -d "$$i" ]]           && mkdir "$$i"; \
+		[[ ! -d "$$i/hooks" ]]     && mkdir "$$i/hooks"; \
+		[[ ! -f "$$i/README.md" ]] && sed "s/{{PKG_NAME}}/$$i/g;" "$(TEMPLATES)/README.md" > "$$i/README.md"; \
+	done
 endif
 # -----------------------------------------------------------------------------
 $(STOWABLE):
 	@echo "$$(tput setaf 3)Processing: $$(tput setaf 5)$@$$(tput sgr0)"
-	@if [[ -x "$@/hooks/pre-$(HOOK)" ]]; then \
-		echo "$$(tput setaf 5)  Running $$(tput setaf 3)pre-$(HOOK)$$(tput setaf 5) hook$$(tput sgr0)"; \
-		$(SHELL) "./$@/hooks/pre-$(HOOK)"; \
-	fi
+	@$(SCRIPTS)/process-hooks "$@" "pre-$(HOOK)"
 	@stow -v -t "$(STOW_TARGET)" \
 		--no-folding \
 		--ignore='^README.md$$' \
 		--ignore='^hooks$$' \
  		$(STOW_OPTIONS) $@
-	@if [[ -x "$@/hooks/post-$(HOOK)" ]]; then \
-		echo "$$(tput setaf 5)  Running $$(tput setaf 3)post-$(HOOK)$$(tput setaf 5) hook$$(tput sgr0)"; \
-		$(SHELL) "./$@/hooks/post-$(HOOK)"; \
-	fi
+	@$(SCRIPTS)/process-hooks "$@" "post-$(HOOK)"
 # -----------------------------------------------------------------------------
 .PHONY: $(STOWABLE)

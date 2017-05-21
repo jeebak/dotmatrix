@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+if [[ -x "$1/hooks/$2" ]]; then
+  echo "$(tput setaf 5)  Running $(tput setaf 3)${2}$(tput setaf 5) hook$(tput sgr0)"
+  "./$1/hooks/$2"
+fi
