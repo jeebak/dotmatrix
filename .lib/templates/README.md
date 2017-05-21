@@ -1,6 +1,6 @@
 # {{PKG_NAME}}
 
-_""_
+_"tagline for {{PKG_NAME}} ...and such™"_
 
 ```
 brew install {{PKG_NAME}}

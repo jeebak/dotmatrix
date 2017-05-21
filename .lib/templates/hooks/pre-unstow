@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# More details in .lib/README.md
 # Example:
 
 # rm -vf "$HOME/.pkgname"

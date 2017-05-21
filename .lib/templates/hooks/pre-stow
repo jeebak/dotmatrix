@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# More details in .lib/README.md
 # Example:
 
 # cache_mkdir_p               "pkgname"

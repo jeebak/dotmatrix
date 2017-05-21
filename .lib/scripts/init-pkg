@@ -1,15 +1,40 @@
 #!/usr/bin/env bash
 
 CURRENT_DIR="$(dirname "${BASH_SOURCE[0]}")"
+# shellcheck source=/dev/null
 source "$CURRENT_DIR/common.bash"
 
 TEMPLATES="$CURRENT_DIR/../templates"
 
 for i in "$@"; do
+  echo "$(tput setaf 3)Initializing: $(tput setaf 5)$i$(tput sgr0)"
+
+  # shellcheck disable=SC2015
   [[ ! -d "$i" ]]           && mkdir "$i" || true
+  # shellcheck disable=SC2015
   [[ ! -d "$i/hooks" ]]     && mkdir "$i/hooks" || true
-  [[ ! -f "$i/README.md" ]] && sed "s/{{PKG_NAME}}/$i/g;" "$TEMPLATES/README.md" > "$i/README.md" || true
+
+  if [[ ! -f "$i/README.md" ]]; then
+    echo "$(tput setaf 3)  Adding: $(tput setaf 5)$i/README.md$(tput sgr0)"
+    sed "s/{{PKG_NAME}}/$i/g;" "$TEMPLATES/README.md" > "$i/README.md"
+  fi
+
   for j in "$TEMPLATES/hooks"/*; do
-    [[ ! -f "$i/hooks/$(basename "$j")" ]] && cp "$j" "$i/hooks/" || true
+    hook="$(basename "$j")"
+    if [[ ! -f "$i/hooks/$hook" ]]; then
+      echo "$(tput setaf 3)  Adding: $(tput setaf 5)$i/hooks/$hook$(tput sgr0)"
+      cp "$j" "$i/hooks/"
+    fi
   done
 done
+
+cat <<EOT
+
+It is strongly recommended to keep/update/maintain the README.md's.
+
+Update the hooks scripts to fit your needs, or delete them if they're
+unnecessary.
+
+See .lib/README.md for more details
+
+EOT
