@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+export PKG_TYPE="brew pip brew_cask apt-get:different-name npm gem custom"
+pkg-uninstall "$@"

@@ -1,6 +1,21 @@
 #!/usr/bin/env bash
 
-if [[ -x "$1/hooks/$2" ]]; then
-  echo "$(tput setaf 5)  Running $(tput setaf 3)${2}$(tput setaf 5) hook$(tput sgr0)"
-  "./$1/hooks/$2"
+CURRENT_DIR="$(dirname "${BASH_SOURCE[0]}")"
+# shellcheck source=/dev/null
+source "$CURRENT_DIR/common.bash"
+
+pkg="$1"
+condition="$2"
+hook="$3"
+
+if [[ -x "$pkg/hooks/${hook}" ]]; then
+  if [[ "$condition" = "pre"  && "$hook" = "install" ]] || [[ "$condition" = "post" && "$hook" = "uninstall" ]]; then
+    echo "$(tput setaf 5)  Running $(tput setaf 3)${hook}$(tput setaf 5) hook$(tput sgr0)"
+    # shellcheck source=/dev/null
+    source "./$pkg/hooks/${hook}" "$pkg"
+  fi
+elif [[ -x "$pkg/hooks/${condition}-${hook}" ]]; then
+  echo "$(tput setaf 5)  Running $(tput setaf 3)${condition}-${hook}$(tput setaf 5) hook$(tput sgr0)"
+  # shellcheck source=/dev/null
+  source "./$pkg/hooks/${condition}-${hook}"
 fi

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+CURRENT_DIR="$(dirname "${BASH_SOURCE[0]}")"
+source "$CURRENT_DIR/common.bash"
+
+TEMPLATES="$CURRENT_DIR/../templates"
+
+for i in "$@"; do
+  [[ ! -d "$i" ]]           && mkdir "$i" || true
+  [[ ! -d "$i/hooks" ]]     && mkdir "$i/hooks" || true
+  [[ ! -f "$i/README.md" ]] && sed "s/{{PKG_NAME}}/$i/g;" "$TEMPLATES/README.md" > "$i/README.md" || true
+  for j in "$TEMPLATES/hooks"/*; do
+    [[ ! -f "$i/hooks/$(basename "$j")" ]] && cp "$j" "$i/hooks/" || true
+  done
+done

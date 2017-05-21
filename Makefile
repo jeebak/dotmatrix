@@ -9,10 +9,17 @@ STOW_OPTIONS =
 # Bash completions seems to handle this fine, but not zsh :/
 STOWABLE = $(shell echo */ | sed 's;/;;g')
 # -----------------------------------------------------------------------------
-all: $(STOWABLE)
-
-# if the *first* argument is 'stow,'
-ifeq (stow, $(firstword $(MAKECMDGOALS)))
+define USAGE
+  Usage:
+    make [init|stow|unstow|restow|install|uninstall] [all|pkg-name [pkg-name2 ...]]
+    make help
+endef
+# -----------------------------------------------------------------------------
+# if the *first* argument is 'init,'
+ifeq (init, $(firstword $(MAKECMDGOALS)))
+init:
+	@$(SCRIPTS)/init-pkg $(filter-out $@, $(MAKECMDGOALS))
+else ifeq (stow, $(firstword $(MAKECMDGOALS)))
 stow:
 	@echo "$$(tput setaf 3)Setting: $$(tput setaf 5)STOW_OPTIONS =, HOOK = $@$$(tput sgr0)"
 	$(eval HOOK = stow)
@@ -38,23 +45,21 @@ uninstall:
 	@echo "$$(tput setaf 3)Setting: $$(tput setaf 5)STOW_OPTIONS = -D, HOOK = $@$$(tput sgr0)"
 	$(eval HOOK = uninstall)
 	$(eval STOW_OPTIONS = -D)
-else ifeq (init, $(firstword $(MAKECMDGOALS)))
-init:
-	@for i in $(filter-out $@, $(MAKECMDGOALS)); do \
-		[[ ! -d "$$i" ]]           && mkdir "$$i"; \
-		[[ ! -d "$$i/hooks" ]]     && mkdir "$$i/hooks"; \
-		[[ ! -f "$$i/README.md" ]] && sed "s/{{PKG_NAME}}/$$i/g;" "$(TEMPLATES)/README.md" > "$$i/README.md"; \
-	done
 endif
+# -----------------------------------------------------------------------------
+all: $(STOWABLE)
+
+help:
+	@: $(info $(USAGE))
 # -----------------------------------------------------------------------------
 $(STOWABLE):
 	@echo "$$(tput setaf 3)Processing: $$(tput setaf 5)$@$$(tput sgr0)"
-	@$(SCRIPTS)/process-hooks "$@" "pre-$(HOOK)"
+	@$(SCRIPTS)/process-hooks "$@" "pre" "$(HOOK)"
 	@stow -v -t "$(STOW_TARGET)" \
 		--no-folding \
 		--ignore='^README.md$$' \
 		--ignore='^hooks$$' \
  		$(STOW_OPTIONS) $@
-	@$(SCRIPTS)/process-hooks "$@" "post-$(HOOK)"
+	@$(SCRIPTS)/process-hooks "$@" "post" "$(HOOK)"
 # -----------------------------------------------------------------------------
 .PHONY: $(STOWABLE)

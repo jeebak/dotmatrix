@@ -74,3 +74,93 @@ cache_shallow_clone () {
   git submodule init && git submodule update
   qt popd
 }
+# -----------------------------------------------------------------------------
+pkg-install() {
+  [[ -z "$PKG_TYPE" ]] && die "PKG_TYPE not set!"
+  local i
+
+  for i in $PKG_TYPE; do
+    "$i"-install "$@" && return 0
+  done
+}
+
+pkg-uninstall() {
+  [[ -z "$PKG_TYPE" ]] && die "PKG_TYPE not set!"
+  local i
+
+  for i in $PKG_TYPE; do
+    "$i"-uninstall "$@" && return 0
+  done
+}
+# -----------------------------------------------------------------------------
+brew-cask-is-installed() {
+  qt brew cask list --versions "$@"
+}
+
+brew-is-installed() {
+  qt brew list --versions "$@"
+}
+
+brew-is-tapped() {
+  brew tap | qt grep "$@"
+}
+
+brew-cask-install() {
+  brew-cask-is-installed "$@" || brew cask install "$@"
+}
+
+brew-cask-uninstall() {
+  brew-cask-is-installed "$@" && brew cask uninstall "$@"
+}
+
+brew-install() {
+  brew-is-installed "$@" || brew install "$@"
+}
+
+brew-uninstall() {
+  brew-is-installed "$@" && brew uninstall "$@"
+}
+
+brew-tap() {
+  brew-is-tapped "$@" || brew tap "$@"
+}
+
+brew-untap() {
+  brew-is-tapped "$@" && brew untap "$@"
+}
+# -----------------------------------------------------------------------------
+gem-is-installed() {
+  qt gem list -i "$@"
+}
+
+gem-install() {
+  gem-is-installed "$@" || gem install "$@"
+}
+
+gem-uninstall() {
+  gem-is-installed "$@" && gem uninstall "$@"
+}
+# -----------------------------------------------------------------------------
+npm-is-installed() {
+  qt npm list -g --depth=0 "$@"
+}
+
+npm-install() {
+  npm-is-installed "$@" || npm install "$@"
+}
+
+npm-uninstall() {
+  npm-is-installed "$@" && npm uninstall "$@"
+}
+# -----------------------------------------------------------------------------
+pip-is-installed() {
+  qt pip show "$@"
+}
+
+pip-install() {
+  pip-is-installed "$@" || pip install "$@"
+}
+
+pip-uninstall() {
+  pip-is-installed "$@" && pip uninstall "$@"
+}

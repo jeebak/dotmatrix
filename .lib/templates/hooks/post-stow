@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# Example:
+
+# cache_mkdir_p               "pkgname"
+# cache_makelink   ".pkgname" "pkgname"
+# cache_verifylink ".pkgname" "pkgname"
