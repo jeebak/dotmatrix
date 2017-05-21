@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
 
-CURRENT_DIR="$(dirname "${BASH_SOURCE[0]}")"
-source "$CURRENT_DIR/../../.lib/scripts/common.bash"
-
 # shellcheck disable=SC2015
 cmd_exists lesskey && lesskey || true

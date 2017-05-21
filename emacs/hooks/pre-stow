@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-CURRENT_DIR="$(dirname "${BASH_SOURCE[0]}")"
-source "$CURRENT_DIR/../../.lib/scripts/common.bash"
-
 # cache_shallow_clone https://github.com/syl20bnr/spacemacs "emacs/spacemacs"
 # cache_makelink   ".emacs.d" "emacs/spacemacs"
 # cache_verifylink ".emacs.d" "emacs/spacemacs"
