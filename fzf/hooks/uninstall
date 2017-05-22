@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# More details in .lib/README.md
+if [[ -x ~/.fzf/uninstall ]]; then
+  ~/.fzf/uninstall
+fi

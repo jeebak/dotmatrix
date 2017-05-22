@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# More details in .lib/README.md
+export PKG_TYPE="brew:emacs-plus"
+pkg-uninstall "$@"
+brew-untap d12frosted/emacs-plus

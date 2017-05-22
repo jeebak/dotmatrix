@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# More details in .lib/README.md
+if [[ ! -x /usr/local/bin/allmark ]]; then
+  # TODO: add logic to test for correct platform
+  curl -s -L https://github.com/andreaskoch/allmark/releases/download/v0.10.0/allmark_darwin_amd64 -o /usr/local/bin/allmark
+  chmod +x /usr/local/bin/allmark
+fi

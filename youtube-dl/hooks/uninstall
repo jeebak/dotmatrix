@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# More details in .lib/README.md
+export PKG_TYPE="brew pip:youtube_dl"
+pkg-uninstall "$@"

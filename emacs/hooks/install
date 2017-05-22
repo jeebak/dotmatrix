@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# More details in .lib/README.md
+export PKG_TYPE="brew:emacs-plus"
+brew-tap d12frosted/emacs-plus
+pkg-install "$@"

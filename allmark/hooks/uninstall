@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# More details in .lib/README.md
+if [[ -x /usr/local/bin/allmark ]]; then
+  rm -f /usr/local/bin/allmark
+fi

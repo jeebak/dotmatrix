@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# More details in .lib/README.md
+export PKG_TYPE="brew"
+brew-tap jmespath/jmespath
+pkg-install "$@"
