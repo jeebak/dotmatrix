@@ -77,19 +77,35 @@ cache_shallow_clone () {
 # -----------------------------------------------------------------------------
 pkg-install() {
   [[ -z "$PKG_TYPE" ]] && die "PKG_TYPE not set!"
-  local i
+  local i pkg _type
 
   for i in $PKG_TYPE; do
-    "$i"-install "$@" && return 0
+    pkg="$*"
+    _type="$i"
+
+    if [[ $i == *":"* ]]; then
+      _type="${i%:*}"
+      pkg="${i#*:}"
+    fi
+
+    "${_type}"-install "$pkg" && return 0
   done
 }
 
 pkg-uninstall() {
   [[ -z "$PKG_TYPE" ]] && die "PKG_TYPE not set!"
-  local i
+  local i pkg _type
 
   for i in $PKG_TYPE; do
-    "$i"-uninstall "$@" && return 0
+    pkg="$*"
+    _type="$i"
+
+    if [[ $i == *":"* ]]; then
+      _type="${i%:*}"
+      pkg="${i#*:}"
+    fi
+
+    "${_type}"-uninstall "$pkg" && return 0
   done
 }
 # -----------------------------------------------------------------------------

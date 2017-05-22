@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 # More details in .lib/README.md
-export PKG_TYPE="brew pip brew_cask apt-get:different-name npm gem custom"
+export PKG_TYPE="brew pip brew-cask apt-get:different-name npm gem custom"
 pkg-install "$@"
