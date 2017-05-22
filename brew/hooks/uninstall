@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# More details in .lib/README.md
+echo "Nope!"

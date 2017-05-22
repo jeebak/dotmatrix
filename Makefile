@@ -52,7 +52,7 @@ all: $(STOWABLE)
 help:
 	@: $(info $(USAGE))
 # -----------------------------------------------------------------------------
-$(STOWABLE):
+$(STOWABLE): stow-available
 	@echo "$$(tput setaf 3)Processing: $$(tput setaf 5)$@$$(tput sgr0)"
 	@$(SCRIPTS)/process-hooks "$@" "pre" "$(HOOK)"
 	@stow -v -t "$(STOW_TARGET)" \
@@ -61,5 +61,8 @@ $(STOWABLE):
 		--ignore='^hooks$$' \
  		$(STOW_OPTIONS) $@
 	@$(SCRIPTS)/process-hooks "$@" "post" "$(HOOK)"
+# -----------------------------------------------------------------------------
+stow-available:
+	@command -v stow > /dev/null || make install gnu-stow
 # -----------------------------------------------------------------------------
 .PHONY: $(STOWABLE)

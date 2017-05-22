@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# More details in .lib/README.md
+cmd_exists brew || /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
