@@ -7,6 +7,7 @@ multiplexer."_
 
 * https://tmux.github.io/
 * http://byobu.co/
+* https://leanpub.com/the-tao-of-tmux/read
 
 There are examples of `pre` and `post` hooks in the `hooks` folder.
 

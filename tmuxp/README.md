@@ -10,3 +10,4 @@ tmupx load 4-pane-split # example
 * http://tmuxp.git-pull.com/en/latest/
 * http://tmuxp.readthedocs.io/en/latest/ (same?)
 * https://github.com/tony/tmuxp
+* https://leanpub.com/the-tao-of-tmux/read
