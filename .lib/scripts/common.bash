@@ -162,11 +162,11 @@ npm-is-installed() {
 }
 
 npm-install() {
-  npm-is-installed "$@" || npm install "$@"
+  npm-is-installed "$@" || npm install -g "$@"
 }
 
 npm-uninstall() {
-  npm-is-installed "$@" && npm uninstall "$@"
+  npm-is-installed "$@" && npm uninstall -g "$@"
 }
 # -----------------------------------------------------------------------------
 pip-is-installed() {
