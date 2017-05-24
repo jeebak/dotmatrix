@@ -3,6 +3,8 @@
 #exit
 # Just an example, so just exiting out right away
 
+chmod 700 "$HOME/.ssh/config.d"
+
 cat "$HOME/.ssh/config.d/"*.conf > "$HOME/.ssh/config.$$"
 
 if [[ ! -e "$HOME/.ssh/config" ]]; then
