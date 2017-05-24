@@ -88,6 +88,7 @@ pkg-install() {
       pkg="${i#*:}"
     fi
 
+    echo "$(tput setaf 5)    Running: $(tput setaf 3)${_type}-install $pkg$(tput sgr0)"
     "${_type}"-install "$pkg" && return 0
   done
 }
