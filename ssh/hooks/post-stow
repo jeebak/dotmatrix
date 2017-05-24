@@ -3,7 +3,7 @@
 #exit
 # Just an example, so just exiting out right away
 
-cat "$HOME/.ssh/conf.d/"*.conf > "$HOME/.ssh/config.$$"
+cat "$HOME/.ssh/config.d/"*.conf > "$HOME/.ssh/config.$$"
 
 if [[ ! -e "$HOME/.ssh/config" ]]; then
   mv "$HOME/.ssh/config.$$" "$HOME/.ssh/config"
