@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 # shellcheck disable=SC2015
-cmd_exists lesskey && lesskey || true
+cmd-exists lesskey && lesskey || true

@@ -37,7 +37,7 @@ qte() {
   "$@" 2> /dev/null
 }
 
-cmd_exists() {
+cmd-exists() {
   command -v "$1" > /dev/null 2>&1
 }
 

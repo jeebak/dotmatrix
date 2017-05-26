@@ -20,12 +20,12 @@ qte() { # Quiet stderr
 }
 
 # -- Tests ---------------------------------------------------------------------
-cmd_exists() { # Does the command exist and in $PATH
+cmd-exists() { # Does the command exist and in $PATH
   command -v "$1" > /dev/null 2>&1
 }
 
 # -- Filters -------------------------------------------------------------------
-no_comments() { # Strip '#' based comments
+no-comments() { # Strip '#' based comments
   if [[ "$#" -eq 0 ]]; then
     sed 's/#.*$//'
   else
@@ -114,7 +114,7 @@ myspell() { # Ispell checking
   echo "$@" | ispell -a -m
 }
 
-broken_links() { # Find broken symlinks
+broken-links() { # Find broken symlinks
   # http://unix.stackexchange.com/questions/34248/how-can-i-find-broken-symlinks/38691#38691
   #   vs. 'find -L "${1:-.}" -type l -ls'
   find "${1:-.}" -xtype l -ls
@@ -245,7 +245,7 @@ curl() { # Curl wrapper that uses $1 for --config, if file exists
   fi
 }
 
-if cmd_exists yadm; then
+if cmd-exists yadm; then
   git() { # Wrapper for git, that's yadm aware
     local git_root="$(qt command git rev-parse --show-toplevel)"
 
@@ -257,20 +257,20 @@ if cmd_exists yadm; then
   }
 fi
 
-if cmd_exists md5 && ! cmd_exists md5sum; then
+if cmd-exists md5 && ! cmd-exists md5sum; then
   md5sum() { # Wrapper for md5
     md5 "$@" | sed 's/^MD5 (\(.*\)) = \([a-f0-9]*\)/\2  \1/'
   }
 fi
 
 # Is the column cmd available? If so,...
-if cmd_exists column; then
+if cmd-exists column; then
   mount() { # Make mount display more pretty
     [[ $# -eq 0 ]] && command mount | column -t || command mount "$@"
   }
 fi
 
-if cmd_exists puppet-lint; then
+if cmd-exists puppet-lint; then
   # NOTE: I'm primarily using this for only files/dirs re: options for
   # 'puppet-lint' and 'puppet parser validate' are different
   # ... and only the special case of the '--fix' puppet-lint option is handles,
@@ -279,7 +279,7 @@ if cmd_exists puppet-lint; then
     echo "Running: puppet-lint $@"
     command puppet-lint "$@"
 
-    if cmd_exists puppet; then
+    if cmd-exists puppet; then
       [[ "$1" = '--fix' ]] && shift
       echo "Running: puppet parser validate $@"
       command puppet parser validate "$@"
@@ -287,7 +287,7 @@ if cmd_exists puppet-lint; then
   }
 fi
 
-if cmd_exists curl && ! cmd_exists wget; then
+if cmd-exists curl && ! cmd-exists wget; then
   wget() { # Wrapper for wget, using curl
     local outfile="$(basename "$1")"
     # The -O (--remote-name) option seems to fail if there's a 302
