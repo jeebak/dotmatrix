@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+if [[ -n "${BASH_SOURCE[0]}" ]]; then
+  DOTFILES_ROOT="${BASH_SOURCE[0]}"
+elif [[ -n "$ZSH_VERSION" ]]; then
+  DOTFILES_ROOT="${0:A}"
+fi
+
+export DOTFILES_ROOT="${DOTFILES_ROOT%/*/*/*/*}"
+
 # https://gist.github.com/waylan/4080362
 
 # -- I/O Redirection -----------------------------------------------------------
@@ -68,6 +76,12 @@ c() { # Quick command line calculator
     printf "$result";
   fi;
   printf "\n";
+}
+
+dotdocs() { # Serve doc files under $DOTFILES_ROOT
+  if cmd-exists allmark; then
+    allmark serve "$DOTFILES_ROOT"
+  fi
 }
 
 # http://chneukirchen.org/blog/archive/2013/03/10-fresh-zsh-tricks-you-may-not-know.html
