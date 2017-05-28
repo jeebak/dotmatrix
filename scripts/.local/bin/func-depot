@@ -269,6 +269,13 @@ if cmd-exists yadm; then
       command git "$@"
     fi
   }
+
+  yalm() { # Wrapper for yadm, that's "localfiles" aware
+    # Yet another "localfiles" manager (based on hostname)
+    local _hostname="$(hostname -s)"
+
+    command yadm --yadm-repo ~/.yadm/"repo-${_hostname}.git" "$@"
+  }
 fi
 
 if cmd-exists md5 && ! cmd-exists md5sum; then
