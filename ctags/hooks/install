@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# More details in .lib/README.md
+export PKG_TYPE="brew"
+brew-tap universal-ctags/universal-ctags
+pkg-install universal-ctags --HEAD
