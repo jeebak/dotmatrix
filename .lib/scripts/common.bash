@@ -80,7 +80,8 @@ pkg-install() {
   local i pkg _type
 
   for i in $PKG_TYPE; do
-    pkg="$*"
+    pkg="$1"
+    shift
     _type="$i"
 
     if [[ $i == *":"* ]]; then
@@ -88,8 +89,8 @@ pkg-install() {
       pkg="${i#*:}"
     fi
 
-    echo "$(tput setaf 5)    Running: $(tput setaf 3)${_type}-install $pkg$(tput sgr0)"
-    "${_type}"-install "$pkg" && return 0
+    echo "$(tput setaf 5)    Running: $(tput setaf 3)${_type}-install $pkg ${*}$(tput sgr0)"
+    "${_type}"-install "$pkg" "$@" && return 0
   done
 }
 
@@ -98,7 +99,8 @@ pkg-uninstall() {
   local i pkg _type
 
   for i in $PKG_TYPE; do
-    pkg="$*"
+    pkg="$1"
+    shift
     _type="$i"
 
     if [[ $i == *":"* ]]; then
@@ -106,7 +108,8 @@ pkg-uninstall() {
       pkg="${i#*:}"
     fi
 
-    "${_type}"-uninstall "$pkg" && return 0
+    echo "$(tput setaf 5)    Running: $(tput setaf 3)${_type}-uninstall $pkg ${*}$(tput sgr0)"
+    "${_type}"-uninstall "$pkg" "$@" && return 0
   done
 }
 # -----------------------------------------------------------------------------
