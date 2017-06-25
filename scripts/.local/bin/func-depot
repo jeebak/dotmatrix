@@ -261,12 +261,17 @@ curl() { # Curl wrapper that uses $1 for --config, if file exists
 
 if cmd-exists yadm; then
   git() { # Wrapper for git, that's yadm aware
-    local git_root="$(qt command git rev-parse --show-toplevel)"
+    local git_root="$(qte command git rev-parse --show-toplevel)"
 
     if [[ "$PWD" = "$HOME" ]] || [[ "$git_root" = "$HOME" ]]; then
+      # Use yadm on in $HOME
       command yadm "$@"
     else
-      command git "$@"
+      if [[ -z "$git_root" ]]; then
+        yalm "$@"
+      else
+        command git "$@"
+      fi
     fi
   }
 
