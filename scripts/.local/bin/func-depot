@@ -43,7 +43,7 @@ no-comments() { # Strip '#' based comments
 
 # -- Edit results --------------------------------------------------------------
 vgmod() { # Edit file that git thinks is modified, with $VISUAL
-  "$VISUAL" $(git status -s | sed -ne 's/^ *MM* //p')
+  "$VISUAL" $(command git status -s | sed -ne 's/^ *MM* //p')
 }
 
 vimwhich() { # Edit the results of the which command (file or alias) with vim
@@ -120,7 +120,7 @@ galias() { # Show shell and git aliases
     alias | grep git | sed 's/^/ /;s/=/#=> /' | column -t -s'#' | cat -n
     echo
     echo "Git Aliases"
-    git config --list | grep '^alias\.' | sed 's/^alias\.\([^=]*\)=\(.*\)/ \1#=> \2/' | column -s'#' -t | sort | cat -n
+    command git config --list | grep '^alias\.' | sed 's/^alias\.\([^=]*\)=\(.*\)/ \1#=> \2/' | column -s'#' -t | sort | cat -n
   } | less -S
 }
 
@@ -280,7 +280,7 @@ fi
 
 if cmd-exists md5 && ! cmd-exists md5sum; then
   md5sum() { # Wrapper for md5
-    md5 "$@" | sed 's/^MD5 (\(.*\)) = \([a-f0-9]*\)/\2  \1/'
+    command md5 "$@" | sed 's/^MD5 (\(.*\)) = \([a-f0-9]*\)/\2  \1/'
   }
 fi
 
@@ -312,7 +312,7 @@ if cmd-exists curl && ! cmd-exists wget; then
   wget() { # Wrapper for wget, using curl
     local outfile="$(basename "$1")"
     # The -O (--remote-name) option seems to fail if there's a 302
-    curl -o "$outfile" "$1"
+    command curl -o "$outfile" "$1"
   }
 fi
 # -- "main()" if not "source"-d ------------------------------------------------
