@@ -20,3 +20,4 @@ brew reinstall powershell
 * https://msdn.microsoft.com/powershell
 * https://github.com/PowerShell/PowerShell
 * https://github.com/PowerShell/PowerShell/blob/master/docs/installation/linux.md#macos-1012
+* https://github.com/janikvonrotz/awesome-powershell
