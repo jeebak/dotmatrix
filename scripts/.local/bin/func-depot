@@ -97,6 +97,18 @@ imv() { # Interactive mv
   done
 }
 
+# ... and, of course
+icp() { # Interactive cp
+  local src dst
+  for src; do
+    [[ -e $src ]] || { print -u2 "$src does not exist"; continue; }
+    dst=$src
+    echo "Copy to?..."
+    vared dst
+    [[ $src != $dst ]] && mkdir -p $dst:h && cp -n $src $dst
+  done
+}
+
 # up() { # Cd up directories
 #   local op=print
 #   [[ -t 1 ]] && op=cd
