@@ -11,4 +11,4 @@
 
 # Save all videos under Videos/Youtube-DL directory under home directory
 # The current default template is %(title)s-%(id)s.%(ext)s.
--o ~/Videos/Youtube-DL/%(title)s-%(id)s.%(ext)s
+-o ~/Videos/YouTube/Downloads/%(title)s-%(id)s.%(ext)s
