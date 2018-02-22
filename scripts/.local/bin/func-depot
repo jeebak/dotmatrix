@@ -89,11 +89,11 @@ dotdocs() { # Serve doc files under $DOTFILES_ROOT
 imv() { # Interactive mv
   local src dst
   for src; do
-    [[ -e $src ]] || { print -u2 "$src does not exist"; continue; }
-    dst=$src
+    [[ -e "$src" ]] || { print -u2 "$src does not exist"; continue; }
+    dst="$src"
     echo "Rename to?..."
     vared dst
-    [[ $src != $dst ]] && mkdir -p $dst:h && mv -n $src $dst
+    [[ "$src" != "$dst" ]] && mkdir -p "${dst:}h" && mv -n "$src" "$dst"
   done
 }
 
@@ -101,11 +101,11 @@ imv() { # Interactive mv
 icp() { # Interactive cp
   local src dst
   for src; do
-    [[ -e $src ]] || { print -u2 "$src does not exist"; continue; }
-    dst=$src
+    [[ -e "$src" ]] || { print -u2 "$src does not exist"; continue; }
+    dst="$src"
     echo "Copy to?..."
     vared dst
-    [[ $src != $dst ]] && mkdir -p $dst:h && cp -n $src $dst
+    [[ "$src" != "$dst" ]] && mkdir -p "${dst:h}" && cp -n "$src" "$dst"
   done
 }
 
