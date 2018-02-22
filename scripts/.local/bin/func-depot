@@ -93,7 +93,7 @@ imv() { # Interactive mv
     dst="$src"
     echo "Rename to?..."
     vared dst
-    [[ "$src" != "$dst" ]] && mkdir -p "${dst:}h" && mv -n "$src" "$dst"
+    [[ "$src" != "$dst" ]] && mkdir -p "${dst:h}" && mv -n "$src" "$dst"
   done
 }
 
