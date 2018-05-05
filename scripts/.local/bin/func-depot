@@ -34,10 +34,19 @@ cmd-exists() { # Does the command exist and in $PATH
 
 # -- Filters -------------------------------------------------------------------
 no-comments() { # Strip '#' based comments
+  local i
+
   if [[ "$#" -eq 0 ]]; then
-    sed 's/#.*$//'
+    sed 's/#.*$//;s/  *//;/^$/d'
   else
-    echo "$@" | sed 's/#.*$//'
+    for i in "$@"; do
+      if [[ -f "$i" ]]; then
+        echo "Processing: $i"
+        sed 's/#.*$//;s/  *//;/^$/d' < "$i"
+      else
+        echo "Skipping: $i"
+      fi
+    done
   fi
 }
 
