@@ -312,7 +312,7 @@ pdirs() { # List cwd of all running instances a program (ex. pdirs vim)
 
     if [[ -n "$pids" ]]; then
       for pid in $(echo $pids); do
-        lsof -p $pid | grep cwd
+        qte lsof -p $pid | grep cwd
       done
     fi
   done
