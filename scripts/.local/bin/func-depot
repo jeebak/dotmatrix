@@ -171,7 +171,20 @@ mb() { # Human readable Megabytes
 }
 
 newest() { # List files in timestamp order, newest last
-  find "${1:-.}" -type f -printf "%C@ %c %p\n" | grep -v -e \\.git/ | sort | sed 's/^[[:digit:]]*\.[[:digit:]]* //; s/\.[[:digit:]]* / /'
+  local FIND
+
+  if qte find --version | grep -q gnu; then
+    FIND="$(command -v find)";
+  else
+    if qte gfind --version | grep -q gnu; then
+      FIND="$(command -v gfind)";
+    else
+      errcho "No find no find!"
+      exit 127
+    fi
+  fi
+
+  "$FIND" "${1:-.}" -type f -printf "%C@ %c %p\n" | grep -v -e \\.git/ | sort | sed 's/^[[:digit:]]*\.[[:digit:]]* //; s/\.[[:digit:]]* / /'
 }
 
 # https://github.com/myfreeweb/zshuery
