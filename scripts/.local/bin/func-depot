@@ -187,6 +187,11 @@ newest() { # List files in timestamp order, newest last
   "$FIND" "${1:-.}" -type f -printf "%C@ %c %p\n" | grep -v -e \\.git/ | sort | sed 's/^[[:digit:]]*\.[[:digit:]]* //; s/\.[[:digit:]]* / /'
 }
 
+sizest() { # List files in size order, largest last
+  # This should work w/ both BSD and GNU find
+  find "${1:-.}" -type f -print0 | xargs -0 ls -lS | sort -n -k 5,5
+}
+
 # https://github.com/myfreeweb/zshuery
 #   autoload colors; colors; is loaded elsewhere
 #   Added: | cat -n
