@@ -306,7 +306,7 @@ if cmd-exists yadm; then
       # Use yadm on in $HOME
       command yadm "$@"
     else
-      if [[ -z "$git_root" ]]; then
+      if [[ -z "$git_root" ]] && ! yalm rev-parse --show-toplevel | grep -q -E 'ERROR: Git repo does not exist.'; then
         yalm "$@"
       else
         command git "$@"
