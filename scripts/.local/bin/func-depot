@@ -184,7 +184,7 @@ newest() { # List files in timestamp order, newest last
     fi
   fi
 
-  "$FIND" "${1:-.}" -type f -printf "%C@ %c %p\n" | grep -v -e \\.git/ | sort | sed 's/^[[:digit:]]*\.[[:digit:]]* //; s/\.[[:digit:]]* / /'
+  "$FIND" "${1:-.}" -type f -printf "%T@ %t %p\n" | grep -v -e \\.git/ | sort | sed 's/^[[:digit:]]*\.[[:digit:]]* //; s/\.[[:digit:]]* / /'
 }
 
 sizest() { # List files in size order, largest last
