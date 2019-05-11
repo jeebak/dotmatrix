@@ -10,7 +10,7 @@ export DOTFILES_ROOT="${DOTFILES_ROOT%/*/*/*/*}"
 
 # https://gist.github.com/waylan/4080362
 
-# -- I/O Redirection -----------------------------------------------------------
+# -- I/O Redirection ----------------------------------------------------------
 errcho() { # Echo to strerr
   >&2 echo "$@"
 }
@@ -27,12 +27,12 @@ qte() { # Quiet stderr
   "$@" 2> /dev/null
 }
 
-# -- Tests ---------------------------------------------------------------------
+# -- Tests --------------------------------------------------------------------
 cmd-exists() { # Does the command exist and in $PATH
   command -v "$1" > /dev/null 2>&1
 }
 
-# -- Filters -------------------------------------------------------------------
+# -- Filters ------------------------------------------------------------------
 no-comments() { # Strip '#' based comments
   local i
 
@@ -50,7 +50,7 @@ no-comments() { # Strip '#' based comments
   fi
 }
 
-# -- Edit results --------------------------------------------------------------
+# -- Edit results -------------------------------------------------------------
 vgmod() { # Edit file that git thinks is modified, with $VISUAL
   "$VISUAL" $(command git status -s | sed -ne 's/^ *MM* //p')
 }
@@ -67,7 +67,7 @@ vimwhich() { # Edit the results of the which command (file or alias) with vim
   fi
 }
 
-# -- Utilities -----------------------------------------------------------------
+# -- Utilities ----------------------------------------------------------------
 # Refined with: https://github.com/mathiasbynens/dotfiles/blob/master/.functions
 c() { # Quick command line calculator
   local result="";
@@ -149,13 +149,6 @@ myspell() { # Ispell checking
   echo "$@" | ispell -a -m
 }
 
-broken-links() { # Find broken symlinks
-  # http://unix.stackexchange.com/questions/34248/how-can-i-find-broken-symlinks/38691#38691
-  #   vs. 'find -L "${1:-.}" -type l -ls'
-  find "${1:-.}" -xtype l -ls
-  # slower: ls -l  **/*(-@)
-}
-
 mb() { # Human readable Megabytes
   local i
 
@@ -168,28 +161,6 @@ mb() { # Human readable Megabytes
       echo "scale=2; $i/1048576" | bc
     fi
   done
-}
-
-newest() { # List files in timestamp order, newest last
-  local FIND
-
-  if qte find --version | grep -q gnu; then
-    FIND="$(command -v find)";
-  else
-    if qte gfind --version | grep -q gnu; then
-      FIND="$(command -v gfind)";
-    else
-      errcho "No find no find!"
-      exit 127
-    fi
-  fi
-
-  "$FIND" "${1:-.}" -type f -printf "%T@ %t %p\n" | grep -v -e \\.git/ | sort | sed 's/^[[:digit:]]*\.[[:digit:]]* //; s/\.[[:digit:]]* / /'
-}
-
-sizest() { # List files in size order, largest last
-  # This should work w/ both BSD and GNU find
-  find "${1:-.}" -type f -print0 | xargs -0 ls -lS | sort -n -k 5,5
 }
 
 # https://github.com/myfreeweb/zshuery
@@ -285,7 +256,41 @@ vercmp() { # Version Compare: returns 0 for '=', 1 for '<', and 2 for '>'
   return 2
 }
 
-# -- Override Commands ---------------------------------------------------------
+# -- "Find" Utilities ---------------------------------------------------------
+broken-links() { # Find broken symlinks
+  # http://unix.stackexchange.com/questions/34248/how-can-i-find-broken-symlinks/38691#38691
+  #   vs. 'find -L "${1:-.}" -type l -ls'
+  find "${1:-.}" -xtype l -ls
+  # slower: ls -l  **/*(-@)
+}
+
+exts() { # List all file extensions
+  find "${1:-.}" -type f -name '*.*' | sed 's|.*\.||' | sort | uniq -c
+}
+
+newest() { # List files in timestamp order, newest last
+  local FIND
+
+  if qte find --version | grep -q gnu; then
+    FIND="$(command -v find)";
+  else
+    if qte gfind --version | grep -q gnu; then
+      FIND="$(command -v gfind)";
+    else
+      errcho "No find no find!"
+      exit 127
+    fi
+  fi
+
+  "$FIND" "${1:-.}" -type f -printf "%T@ %t %p\n" | grep -v -e \\.git/ | sort | sed 's/^[[:digit:]]*\.[[:digit:]]* //; s/\.[[:digit:]]* / /'
+}
+
+sizest() { # List files in size order, largest last
+  # This should work w/ both BSD and GNU find
+  find "${1:-.}" -type f -print0 | xargs -0 ls -lS | sort -n -k 5,5
+}
+
+# -- Override Commands --------------------------------------------------------
 curl() { # Curl wrapper that uses $1 for --config, if file exists
   local conf_option
 
@@ -373,7 +378,7 @@ if cmd-exists curl && ! cmd-exists wget; then
     command curl -o "$outfile" "$1"
   }
 fi
-# -- "main()" if not "source"-d ------------------------------------------------
+# -- "main()" if not "source"-d -----------------------------------------------
 #   declare -F, for function names
 #   declare -f, for function definitions
 if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then
