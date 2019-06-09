@@ -259,9 +259,13 @@ vercmp() { # Version Compare: returns 0 for '=', 1 for '<', and 2 for '>'
 # -- "Find" Utilities ---------------------------------------------------------
 broken-links() { # Find broken symlinks
   # http://unix.stackexchange.com/questions/34248/how-can-i-find-broken-symlinks/38691#38691
-  #   vs. 'find -L "${1:-.}" -type l -ls'
-  find "${1:-.}" -xtype l -ls
+  #   vs. 'find -L "${1:-.}" -type l -ls' # (the "-L" is too "dangerous")
   # slower: ls -l  **/*(-@)
+  if reo find --help | grep -q xtype; then
+    find "${1:-.}" -xtype l -ls
+  else
+    find "${1:-.}" -type l ! -exec test -e {} \; -ls
+  fi
 }
 
 exts() { # List all file extensions
